@@ -20,101 +20,117 @@ class InstagramAutomationTest {
 
         // Ir a inicio
         device.pressHome()
-        Thread.sleep(2000)
+        Thread.sleep(1000)
 
-        // Abrir Instagram
+        // Abrir TikTok
         val packageManager = context.packageManager
-        val instagramIntent = packageManager.getLaunchIntentForPackage("com.instagram.android")
+        val tiktokIntent = packageManager.getLaunchIntentForPackage("com.zhiliaoapp.musically")
 
-        if (instagramIntent != null) {
-            instagramIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            Log.d("InstagramAutomation", "Ejecutando Intent para abrir Instagram")
-            context.startActivity(instagramIntent)
+        if (tiktokIntent != null) {
+            tiktokIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            Log.d("TikTokAutomation", "Ejecutando Intent para abrir TikTok")
+            context.startActivity(tiktokIntent)
         } else {
-            Log.e("InstagramAutomation", "No se encontró Instagram instalado en el dispositivo")
+            Log.e("TikTokAutomation", "No se encontró TikTok instalado en el dispositivo")
             return
         }
 
-        Thread.sleep(2000) // Esperar a que cargue Instagram
+        Thread.sleep(2000) // Esperar a que TikTok cargue la pantalla principal
 
-        // Seleccionar el botón de perfil (usualmente en la parte inferior derecha)
-        val profileButton = device.findObject(UiSelector().resourceId("com.instagram.android:id/profile_tab"))
+        // Tocar el botón de búsqueda (coordenadas aproximadas)
+        val x = 1000 // Coordenada X
+        val y = 150  // Coordenada Y
+        Log.d("TikTokAutomation", "Tocando el botón de búsqueda en las coordenadas ($x, $y)")
+        device.click(x, y)
 
-        if (profileButton.exists()) {
-            Log.d("InstagramAutomation", "Seleccionando perfil")
-            profileButton.click()
-        } else {
-            Log.e("InstagramAutomation", "No se encontró el botón de perfil")
-        }
+        Thread.sleep(1000) // Esperar tras tocar el botón de búsqueda
 
-        Thread.sleep(2000) // Esperar a que cargue Instagram
-        val firstPhoto = device.findObject(
-            UiSelector().className("android.widget.Button").instance(4)
+        // Localizar la barra de búsqueda por su clase o recurso
+        val searchBox = device.findObject(
+            UiSelector().className("android.widget.EditText")
         )
 
-        if (firstPhoto.exists() && firstPhoto.isEnabled()) {
-            Log.d("InstagramAutomation", "Seleccionando la primera foto")
-            firstPhoto.click()
+        if (searchBox.exists() && searchBox.isEnabled) {
+            Log.d("TikTokAutomation", "Barra de búsqueda encontrada, escribiendo texto")
+            searchBox.click()
+            Thread.sleep(1000) // Esperar para que el teclado aparezca
+
+            // Escribir el texto en la barra de búsqueda usando setText()
+            searchBox.setText("@david_digitaladspaces")
+
+            // Simular la tecla "Enter" para buscar
+            Log.d("TikTokAutomation", "Presionando Enter para buscar")
+            device.pressKeyCode(android.view.KeyEvent.KEYCODE_ENTER)
         } else {
-            Log.e("InstagramAutomation", "No se encontró la primera foto")
+            Log.e("TikTokAutomation", "No se encontró la barra de búsqueda")
+            return
         }
 
-        // Buscar el botón de comentarios por su resource-id
-        val commentButton = device.findObject(
-            UiSelector().resourceId("com.instagram.android:id/row_feed_button_comment")
+        Thread.sleep(1000) // Esperar a que los resultados de búsqueda carguen
+
+        // Tocar la foto de perfil para abrir el perfil
+        val profilePhoto = device.findObject(
+            UiSelector().resourceId("com.zhiliaoapp.musically:id/hz4")
         )
 
-        Thread.sleep(2000) // Esperar a que cargue Instagram
-
-        // Verificar si existe y hacer clic
-        if (commentButton.exists() && commentButton.isEnabled) {
-            Log.d("InstagramAutomation", "Seleccionando el botón de comentarios")
-            commentButton.click()
+        if (profilePhoto.exists() && profilePhoto.isEnabled) {
+            Log.d("TikTokAutomation", "Foto de perfil encontrada, seleccionando")
+            profilePhoto.click()
         } else {
-            Log.e("InstagramAutomation", "No se encontró el botón de comentarios")
+            Log.e("TikTokAutomation", "No se encontró la foto de perfil")
+            return
         }
 
-        Thread.sleep(2000) // Esperar a que cargue Instagram
+        Thread.sleep(1000) // Esperar a que el perfil del usuario cargue
 
-        // Buscar la caja de comentarios
-        val commentBox = device.findObject(
-            UiSelector().resourceId("com.instagram.android:id/layout_comment_thread_edittext")
+        // Tocar el primer video usando instance(0)
+        val firstVideo = device.findObject(
+            UiSelector().resourceId("com.zhiliaoapp.musically:id/d2r").instance(1) // Aseguramos que seleccionamos el primer nodo
         )
 
-        // Hacer clic en la caja de comentarios
-        if (commentBox.exists() && commentBox.isEnabled) {
-            Log.d("InstagramAutomation", "Seleccionando la caja de comentarios")
-            commentBox.click()
-            Thread.sleep(2000) // Esperar para que el teclado aparezca
-
-            // Pegar texto desde el portapapeles (Método 1)
-            device.pressKeyCode(android.view.KeyEvent.KEYCODE_V, android.view.KeyEvent.META_CTRL_ON)
-
-            // Opción alternativa en caso de que no funcione el método anterior
-            // device.executeShellCommand("input keyevent 279")
-
+        if (firstVideo.exists() && firstVideo.isEnabled) {
+            Log.d("TikTokAutomation", "Primer video encontrado, seleccionando")
+            firstVideo.click()
         } else {
-            Log.e("InstagramAutomation", "No se encontró la caja de comentarios")
+            Log.e("TikTokAutomation", "No se encontró el primer video")
         }
 
-        Thread.sleep(2000) // Esperar a que cargue Instagram
+        Thread.sleep(1000) // Esperar tras seleccionar el video
 
-        val postButton = device.findObject(
-            UiSelector().resourceId("com.instagram.android:id/layout_comment_thread_post_button_icon")
-        )
+        val repeatCount = 3 // Número de videos que se quieren procesar
 
-        if (postButton.exists() && postButton.isEnabled) {
-            Log.d("InstagramAutomation", "Publicando comentario")
-            postButton.click()
-            Thread.sleep(2000) // Esperamos un poco para que se publique correctamente
-        } else {
-            Log.e("InstagramAutomation", "No se encontró el botón de Publicar")
+        for (i in 1..repeatCount) {
+            Log.d("TikTokAutomation", "Procesando video $i")
+
+            // Buscar el botón de "Me gusta" (corazón)
+            val likeButton = device.findObject(
+                UiSelector().resourceId("com.zhiliaoapp.musically:id/dwu")
+            )
+
+            if (likeButton.exists() && likeButton.isEnabled) {
+                Log.d("TikTokAutomation", "Botón de 'Me gusta' encontrado, seleccionando")
+                likeButton.click()
+            } else {
+                Log.e("TikTokAutomation", "No se encontró el botón de 'Me gusta'")
+            }
+
+            Thread.sleep(2000)
+
+            // Deslizar hacia arriba para pasar al siguiente video
+            val startX = device.displayWidth / 2 // Mitad de la pantalla horizontal
+            val startY = device.displayHeight * 3 / 4 // Comenzar desde 3/4 de la altura
+            val endY = device.displayHeight / 4 // Terminar en 1/4 de la altura
+            val duration = 10 // Duración del deslizamiento en milisegundos
+
+            Log.d("TikTokAutomation", "Deslizando hacia arriba para el siguiente video")
+            device.swipe(startX, startY, startX, endY, duration)
+
+            // Esperar un momento después de deslizar para que el video cargue
+            Thread.sleep(2000) // Ajustar el tiempo si es necesario
         }
 
+        Log.d("TikTokAutomation", "Proceso completado")
 
-
-
-
-
+        Log.d("TikTokAutomation", "Automatización completada")
     }
 }

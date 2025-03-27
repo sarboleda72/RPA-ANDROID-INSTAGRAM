@@ -8,6 +8,7 @@
 
     <queries>
         <package android:name="com.instagram.android" />
+        <package android:name="com.zhiliaoapp.musically" />
     </queries>
 
     <application
@@ -27,12 +28,8 @@
             android:theme="@style/Theme.InstagramAutomation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
     </application>
-
 </manifest>
